@@ -4,7 +4,7 @@
 #
 Name     : libepoxy
 Version  : 1.3.1
-Release  : 4
+Release  : 5
 URL      : https://github.com/anholt/libepoxy/archive/v1.3.1.tar.gz
 Source0  : https://github.com/anholt/libepoxy/archive/v1.3.1.tar.gz
 Summary  : epoxy GL dispatch Library
