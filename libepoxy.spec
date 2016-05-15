@@ -4,7 +4,7 @@
 #
 Name     : libepoxy
 Version  : 1.3.1
-Release  : 7
+Release  : 8
 URL      : https://github.com/anholt/libepoxy/archive/v1.3.1.tar.gz
 Source0  : https://github.com/anholt/libepoxy/archive/v1.3.1.tar.gz
 Summary  : epoxy GL dispatch Library
@@ -29,6 +29,7 @@ like ```glCompileShader()```.
 Summary: dev components for the libepoxy package.
 Group: Development
 Requires: libepoxy-lib
+Provides: libepoxy-devel
 
 %description dev
 dev components for the libepoxy package.
@@ -46,6 +47,13 @@ lib components for the libepoxy package.
 %setup -q -n libepoxy-1.3.1
 
 %build
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+export CFLAGS="$CFLAGS -O3 -falign-functions=32 -flto -fno-semantic-interposition "
+export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -flto -fno-semantic-interposition "
+export FFLAGS="$CFLAGS -O3 -falign-functions=32 -flto -fno-semantic-interposition "
+export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -flto -fno-semantic-interposition "
 %autogen --disable-static
 make V=1  %{?_smp_mflags}
 
