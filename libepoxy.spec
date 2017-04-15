@@ -5,7 +5,7 @@
 %define keepstatic 1
 Name     : libepoxy
 Version  : 1.4.1
-Release  : 16
+Release  : 17
 URL      : http://github.com/anholt/libepoxy/archive/1.4.1.tar.gz
 Source0  : http://github.com/anholt/libepoxy/archive/1.4.1.tar.gz
 Summary  : epoxy GL dispatch Library
@@ -75,7 +75,7 @@ popd
 
 %build
 export LANG=C
-export SOURCE_DATE_EPOCH=1492268538
+export SOURCE_DATE_EPOCH=1492268885
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
@@ -102,7 +102,7 @@ export no_proxy=localhost
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1492268538
+export SOURCE_DATE_EPOCH=1492268885
 rm -rf %{buildroot}
 pushd ../build32/
 %make_install32
@@ -117,7 +117,6 @@ popd
 
 %files
 %defattr(-,root,root,-)
-/usr/lib32/libepoxy.a
 
 %files dev
 %defattr(-,root,root,-)
@@ -134,6 +133,7 @@ popd
 
 %files dev32
 %defattr(-,root,root,-)
+/usr/lib32/*.a
 /usr/lib32/libepoxy.so
 /usr/lib32/pkgconfig/32epoxy.pc
 /usr/lib32/pkgconfig/epoxy.pc
