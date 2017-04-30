@@ -4,10 +4,10 @@
 #
 %define keepstatic 1
 Name     : libepoxy
-Version  : 1.4.1
-Release  : 17
-URL      : http://github.com/anholt/libepoxy/archive/1.4.1.tar.gz
-Source0  : http://github.com/anholt/libepoxy/archive/1.4.1.tar.gz
+Version  : 1.4.2
+Release  : 18
+URL      : http://github.com/anholt/libepoxy/archive/1.4.2.tar.gz
+Source0  : http://github.com/anholt/libepoxy/archive/1.4.2.tar.gz
 Summary  : epoxy GL dispatch Library
 Group    : Development/Tools
 License  : MIT
@@ -68,14 +68,17 @@ lib32 components for the libepoxy package.
 
 
 %prep
-%setup -q -n libepoxy-1.4.1
+%setup -q -n libepoxy-1.4.2
 pushd ..
-cp -a libepoxy-1.4.1 build32
+cp -a libepoxy-1.4.2 build32
 popd
 
 %build
+export http_proxy=http://127.0.0.1:9/
+export https_proxy=http://127.0.0.1:9/
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1492268885
+export SOURCE_DATE_EPOCH=1493576607
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
@@ -98,11 +101,11 @@ popd
 export LANG=C
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
-export no_proxy=localhost
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1492268885
+export SOURCE_DATE_EPOCH=1493576607
 rm -rf %{buildroot}
 pushd ../build32/
 %make_install32
