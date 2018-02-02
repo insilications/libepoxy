@@ -5,7 +5,7 @@
 %define keepstatic 1
 Name     : libepoxy
 Version  : 1.4.3
-Release  : 21
+Release  : 22
 URL      : https://github.com/anholt/libepoxy/archive/1.4.3.tar.gz
 Source0  : https://github.com/anholt/libepoxy/archive/1.4.3.tar.gz
 Summary  : epoxy GL dispatch Library
