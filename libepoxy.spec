@@ -4,10 +4,10 @@
 #
 %define keepstatic 1
 Name     : libepoxy
-Version  : 1.4.3
-Release  : 22
-URL      : https://github.com/anholt/libepoxy/archive/1.4.3.tar.gz
-Source0  : https://github.com/anholt/libepoxy/archive/1.4.3.tar.gz
+Version  : 1.5.0
+Release  : 23
+URL      : https://github.com/anholt/libepoxy/releases/download/1.5.0/libepoxy-1.5.0.tar.xz
+Source0  : https://github.com/anholt/libepoxy/releases/download/1.5.0/libepoxy-1.5.0.tar.xz
 Summary  : epoxy GL dispatch Library
 Group    : Development/Tools
 License  : MIT
@@ -17,6 +17,8 @@ BuildRequires : gcc-libgcc32
 BuildRequires : gcc-libstdc++32
 BuildRequires : glibc-dev32
 BuildRequires : glibc-libc32
+BuildRequires : meson
+BuildRequires : ninja
 BuildRequires : pkgconfig(32egl)
 BuildRequires : pkgconfig(32gl)
 BuildRequires : pkgconfig(32x11)
@@ -25,6 +27,7 @@ BuildRequires : pkgconfig(egl)
 BuildRequires : pkgconfig(gl)
 BuildRequires : pkgconfig(x11)
 BuildRequires : pkgconfig(xorg-macros)
+BuildRequires : python3
 BuildRequires : python3-dev
 
 %description
@@ -68,9 +71,9 @@ lib32 components for the libepoxy package.
 
 
 %prep
-%setup -q -n libepoxy-1.4.3
+%setup -q -n libepoxy-1.5.0
 pushd ..
-cp -a libepoxy-1.4.3 build32
+cp -a libepoxy-1.5.0 build32
 popd
 
 %build
@@ -78,24 +81,24 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1505182028
+export SOURCE_DATE_EPOCH=1522119441
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-semantic-interposition "
-export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-semantic-interposition "
-export FFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-semantic-interposition "
-export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-semantic-interposition "
-%autogen  --enable-static --enable-glx=yes
-make V=1  %{?_smp_mflags}
+export CFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export FFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+%configure  --enable-static --enable-glx=yes
+make  %{?_smp_mflags}
 
 pushd ../build32/
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
 export CFLAGS="$CFLAGS -m32"
 export CXXFLAGS="$CXXFLAGS -m32"
 export LDFLAGS="$LDFLAGS -m32"
-%autogen  --enable-static --enable-glx=yes  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
-make V=1  %{?_smp_mflags}
+%configure  --enable-static --enable-glx=yes   --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
+make  %{?_smp_mflags}
 popd
 %check
 export LANG=C
@@ -105,7 +108,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1505182028
+export SOURCE_DATE_EPOCH=1522119441
 rm -rf %{buildroot}
 pushd ../build32/
 %make_install32
