@@ -1,3 +1,215 @@
+commit 897e5194743ee0159a428d034822bacb75233cd7
+Author: Emmanuele Bassi <ebassi@gnome.org>
+Date:   Wed Apr 25 11:51:55 2018 +0100
+
+    ci: Use envvars to control the build options
+    
+    Instead of calling docker multiple times ourselves, use the `env` stanza
+    to control the build options.
+
+ .travis.yml | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+commit c8613a29848daf58ce43b01deffac410a344e43e
+Author: Emmanuele Bassi <ebassi@gnome.org>
+Date:   Wed Apr 25 11:43:12 2018 +0100
+
+    meson: Remove unsupported keyword
+    
+    The has_header() function does not have a `required` argument.
+
+ meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit af76cd235d73c412f86bc0c523be88d4b13f353b
+Author: Emmanuele Bassi <ebassi@gnome.org>
+Date:   Thu Apr 12 16:43:03 2018 +0100
+
+    meson: Conditionally test for linker flags
+    
+    Meson 0.46 introduced a function to check for linker flags passed to the
+    compiler; since the version is really brand new, I don't want to bump
+    the dependency on Meson just yet, so we're going to conditionally use
+    get_supported_link_arguments() only if we're building with Meson 0.46 or
+    later.
+
+ src/meson.build | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+commit 5fa7bf6e2790adc468eff5978c728dd9b6f855e4
+Author: Emmanuele Bassi <ebassi@gnome.org>
+Date:   Thu Apr 12 16:39:36 2018 +0100
+
+    Remove the "EGL/GLX have different pointers" tests
+    
+    The correct answer for systems with different EGL and GLX driver
+    implementations is to use GLVND.`
+    
+    Closes #165
+
+ test/Makefile.am                      |  19 ---
+ test/egl_and_glx_different_pointers.c | 246 ----------------------------------
+ test/meson.build                      |  35 -----
+ 3 files changed, 300 deletions(-)
+
+commit fc5750ca017489cfa57a2b24bc48032a9be71497
+Merge: 74dbb7b f7486f7
+Author: Emmanuele Bassi <ebassi@gmail.com>
+Date:   Thu Apr 12 16:37:19 2018 +0100
+
+    Merge pull request #166 from nwnk/assert
+    
+    dispatch: assert, not errx, when we have no context
+
+commit f7486f7753f4ddd58adb476985dcf5962e442172
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Apr 12 11:04:10 2018 -0400
+
+    dispatch: assert, not errx, when we have no context
+    
+    errx() calls exit(), you'd rather get a backtrace.
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+ src/dispatch_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 74dbb7bac9357a60e83a3c8993876eab95fd0792
+Merge: 500f522 5f15168
+Author: Emmanuele Bassi <ebassi@gmail.com>
+Date:   Tue Mar 13 17:50:17 2018 +0000
+
+    Merge pull request #162 from 1ace/meson-simplify
+    
+    meson: simplify build_{glx,egl} logic
+
+commit 5f151684da33fadab3a0cd3270c99a8908ca2056
+Author: Eric Engestrom <eric.engestrom@imgtec.com>
+Date:   Tue Mar 13 12:21:14 2018 +0000
+
+    meson: simplify build_{glx,egl} logic
+    
+    Signed-off-by: Eric Engestrom <eric.engestrom@imgtec.com>
+
+ meson.build | 34 ++++++----------------------------
+ 1 file changed, 6 insertions(+), 28 deletions(-)
+
+commit 500f522d47a242e97d05ce2d5d9e44e410ed7b98
+Merge: 2189bc0 dc5e092
+Author: Emmanuele Bassi <ebassi@gmail.com>
+Date:   Mon Mar 12 12:18:54 2018 +0000
+
+    Merge pull request #156 from tschoonj/fix-gl-pkgconfig-macos
+    
+    meson: do not add gl to pkg-config file on macOS
+
+commit 2189bc0d9ba81c31281c160b05930bac7faacde4
+Merge: 6769ba2 d60b923
+Author: Emmanuele Bassi <ebassi@gmail.com>
+Date:   Mon Mar 12 12:18:25 2018 +0000
+
+    Merge pull request #159 from luzpaz/misc-typos
+    
+    Trival misc. typo fixes
+
+commit 6769ba25bc2c5db15ef1485133df8ae6999a78b3
+Merge: 6c6fcd3 f9098b0
+Author: Emmanuele Bassi <ebassi@gmail.com>
+Date:   Mon Mar 12 12:17:47 2018 +0000
+
+    Merge pull request #158 from rossburton/master
+    
+    Improvements to the test suite
+
+commit f9098b0c1866eba179ad124884aeb146eae30d0a
+Author: Ross Burton <ross.burton@intel.com>
+Date:   Wed Mar 7 13:33:14 2018 +0000
+
+    autotools: check for dlvsym
+    
+    As per the previous commit, instead of assuming that Apple doesn't have dlvsym
+    but everywhere else does, actually check for dlvsym() existing as that function
+    is glibc-specific.
+
+ configure.ac        | 12 ++++++------
+ src/gen_dispatch.py |  0
+ test/Makefile.am    |  8 ++++----
+ 3 files changed, 10 insertions(+), 10 deletions(-)
+
+commit 1267f82021d58a447f5614ceef20509bea47bca3
+Author: Ross Burton <ross.burton@intel.com>
+Date:   Fri Mar 2 17:01:54 2018 +0000
+
+    meson: generalise build_apple to has_dlvsym
+    
+    build_apple was introduced in 756dca as a proxy for the fact that Apple's libc
+    doesn't have dlvsym(), which is glibc-specific so also isn't present in other
+    libc implementations such as musl.
+    
+    Instead of detecting whether we are building for Apple or not, just probe the to
+    see if we have dlvsym.
+
+ meson.build      | 3 ---
+ test/meson.build | 9 ++++++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+commit a35192b07cabc373e56eec6de2b9bd4fdd7bdee8
+Author: Ross Burton <ross.burton@intel.com>
+Date:   Thu Mar 1 17:37:42 2018 +0000
+
+    meson: add option to enable/disable the test suite
+
+ meson.build       | 5 ++++-
+ meson_options.txt | 4 ++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+commit 6c6fcd3b12ab44f97e57ba8a8c35447570f633f8
+Author: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
+Date:   Thu Mar 8 22:30:41 2018 +0100
+
+    test: Avoid egl_without_glx crash on NVIDIA
+    
+    The NVIDIA driver calls dlopen with NULL as filename; strcmp is not
+    NULL-safe.
+
+ test/egl_without_glx.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+commit d60b923d468f77bc504675d563cdbf14a9a29469
+Author: luz.paz <luzpaz@users.noreply.github.com>
+Date:   Mon Mar 5 06:08:53 2018 -0500
+
+    Trival misc. typo fixes
+
+ configure.ac          | 2 +-
+ meson.build           | 2 +-
+ src/dispatch_common.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+commit dc5e092584f5ead9aebba55444ac62ea0ff95e56
+Author: Tom Schoonjans <Tom.Schoonjans@diamond.ac.uk>
+Date:   Wed Feb 28 13:43:00 2018 +0000
+
+    meson: do not add gl to pkg-config file on macOS
+    
+    Even though meson will find the dependency gl on macOS, this does not mean that
+    there is a pkg-config file for it, as meson does not use pkg-config to
+    establish its presence. It should therefore not be added to
+    the libepoxy pkg-config file as a (private) requirement.
+
+ src/meson.build | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit c28759fb3a53dc4628ea2e95f6d4bd2f6980b32d
+Author: Emmanuele Bassi <ebassi@gnome.org>
+Date:   Wed Feb 28 16:15:19 2018 +0700
+
+    Post-release version bump to 1.5.1
+
+ configure.ac | 2 +-
+ meson.build  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
 commit 28ca626eda5c331d94ad96b9e67f0b98177a9dbf
 Author: Emmanuele Bassi <ebassi@gnome.org>
 Date:   Sat Feb 24 14:07:18 2018 +0000
