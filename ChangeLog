@@ -1,3 +1,230 @@
+commit 707f50e680ab4f1861b1e54ca6e2907aaca56c12
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue May 15 12:55:55 2018 -0400
+
+    dispatch: Try harder to avoid calling the resolver
+    
+    Our caller may load (eg) epoxy_glAlphaFunc, which is a function pointer,
+    and then call through that value multiple times. Until the caller
+    re-examines the value of that function pointer, which is a copy
+    relocation in the executable, repeated calls mean repeated work
+    resolving the GL function.
+    
+    We can't make the caller reinspect the variable, but the resolver
+    function can avoid doing redundant work.
+    
+    Fixes: anholt/libepoxy#171
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+ src/dispatch_common.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+commit c00c889e625164fc9507f84e57f40c9962e650bb
+Author: Emmanuele Bassi <ebassi@gnome.org>
+Date:   Thu May 17 14:19:36 2018 +0100
+
+    Use -Bsymbolic-functions instead of -Bsymbolic
+    
+    Epoxy updates the function pointers in order to avoid calling the
+    resolver multiple times, but with -Bsymbolic we're going to update the
+    copy inside libepoxy, instead of the relocated copy in the code using
+    libepoxy. This leads to libepoxy constantly querying the function
+    resolver code instead of just once.
+    
+    We still want to avoid intra-library relocations for our functions,
+    but we need to live with them for our global function pointers.
+    
+    See issue #171
+
+ src/Makefile.am | 2 +-
+ src/meson.build | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 791b28c186882eb8d56f1002acda1dbb4ac00de3
+Author: Emmanuele Bassi <ebassi@gnome.org>
+Date:   Mon May 14 12:49:21 2018 +0100
+
+    Use abort() instead of exit(1)
+    
+    We want to consistently handle exceptions for the internal state checks;
+    calling `exit()` does not allow us to attach a debugger and get a proper
+    trace.
+
+ src/dispatch_common.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit 737b6918703c1d0be1e3d5272f7d06211cdb2b87
+Merge: ff709d3 27b0746
+Author: Emmanuele Bassi <ebassi@gmail.com>
+Date:   Sat May 5 13:31:43 2018 +0100
+
+    Merge pull request #172 from lantw44/master
+    
+    Fix dlwrap for FreeBSD
+
+commit ff709d3d65bb138b591e5a5cd3902bda9a05ecda
+Merge: b80ea6a 90db006
+Author: Emmanuele Bassi <ebassi@gmail.com>
+Date:   Sat May 5 13:29:26 2018 +0100
+
+    Merge pull request #170 from nwnk/epoxy-load-foo
+    
+    Make epoxy_load_{egl,glx} load libraries if they exist
+
+commit 27b07469403af8bcbef9b24a42d4c44c5bffc846
+Author: Ting-Wei Lan <lantw44@gmail.com>
+Date:   Fri May 4 23:59:22 2018 +0800
+
+    dlwrap: Add FBSD_1.0 version for FreeBSD
+    
+    This fixes dlwrap_real_dlsym on FreeBSD, but tests still fail because we
+    currently don't have libglvnd.
+
+ test/dlwrap.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit 5dc0c147e9026cc06b30688537325f77d64b54eb
+Author: Ting-Wei Lan <lantw44@gmail.com>
+Date:   Fri May 4 23:50:36 2018 +0800
+
+    meson: Don't define _POSIX_C_SOURCE when dlvsym is found
+    
+    FreeBSD hides declarations of non-POSIX functions when POSIX macros,
+    such as _POSIX_C_SOURCE or _XOPEN_SOURCE, is defined. This causes
+    test/dlwrap.c to fail to compile because it uses dlvsym and asprintf.
+    
+    Fixes: #169
+
+ test/meson.build | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+commit 90db0069b43f40c071510fa4e3b67f6affebd8e2
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue May 1 11:34:23 2018 -0400
+
+    dispatch: Load EGL/GLX provider lib from epoxy_has_{egl,glx}()
+    
+    Now that we're being conservative about probing libraries, these
+    entrypoints would not succeed unless the caller had already dlopened
+    stuff themselves, or had explicitly linked against the provider library.
+    Both of those are exactly not what we want.
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+ src/dispatch_common.c | 36 ++++++++++++++++++------------------
+ src/dispatch_common.h |  3 +++
+ src/dispatch_egl.c    | 10 ++++++----
+ src/dispatch_glx.c    | 14 ++++++++------
+ 4 files changed, 35 insertions(+), 28 deletions(-)
+
+commit 53ae0bbffe18072e4d8408bad5d8448d0b4392c3
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue May 1 11:16:46 2018 -0400
+
+    dispatch: Stop implicitly loading libraries from do_dlsym
+    
+    Mostly this is to get all the calls to get_dlopen_handle nicely isolated
+    so they're easier to reason about.
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+ src/dispatch_common.c | 87 ++++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 55 insertions(+), 32 deletions(-)
+
+commit b80ea6a36ac579edda5ea575782ce719c314ebfd
+Merge: 43ac911 a33623d
+Author: Emmanuele Bassi <ebassi@gmail.com>
+Date:   Mon Apr 30 23:39:22 2018 +0100
+
+    Merge pull request #168 from nwnk/even-more-gentle-glx-detection
+    
+    Even more gentle glx detection
+
+commit a33623dca7cc430a9edecdc44f1c76bfb251d576
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Apr 9 16:10:52 2018 -0400
+
+    dispatch: Be even gentler about probing for GLX
+    
+    dlsym(NULL) can only see (symbols in) libraries that are loaded
+    RTLD_GLOBAL, but our dlopen()s are RTLD_LOCAL and probably so was the
+    one the app did if it did one. So use RTLD_NOLOAD to probe for the
+    library even if it's LOCAL, iff the lookup is non-fatal.
+    
+    Having done that, don't ever load any libraries on this path. We only
+    perform this check while resolving rendering API functions, and the
+    window system resolution paths already load the appropriate library if
+    they need to. Since you have to have gone through a winsys to get a
+    context, and our resolvers only run when a function is _called_, this
+    would only introduce a failure mode if you tried to call a function
+    without a context bound.
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+ src/dispatch_common.c | 41 +++++++----------------------------------
+ 1 file changed, 7 insertions(+), 34 deletions(-)
+
+commit b5a4b16799a30cb74db1916d52f2756a7a5345ed
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Apr 30 15:26:17 2018 -0400
+
+    dispatch: Query the EGL context version when bootstrapping on GLES
+    
+    We're about to change our dlopen paths to do RTLD_NOLOAD more
+    aggressively. The issue then is we can create an EGL GLES context
+    without libGLES* ever being loaded. test/egl_gles2_without_glx will fail
+    in such a world: the first gentle probe for libGLESv2 will fail, then
+    the less-gentle probe for libGLESv1_CM will be shot down by the test,
+    and we exit.
+    
+    Fortunately by the time we've gotten to this point the context exists,
+    so we can query its version via EGL instead.
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+ src/dispatch_common.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+commit 43ac91170d61514ab1dd156a4373664b961d81d3
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Apr 25 12:13:01 2018 -0400
+
+    test/glx_public_api_core: Fail softer if core contexts aren't available
+    
+    If you've built Mesa with --disable-texture-float, and try to run the
+    tests against Xvfb, glx_public_api_core will fail: creating a direct
+    context with llvmpipe will fail because you don't have
+    ARB_texture_float, and the internal fallback to an indirect context will
+    fail because indirect only supports through 1.4. So the server will
+    throw GLXBadFBConfig at you to say "I don't support core contexts",
+    which we should interpret as a skip not a failure.
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+ test/glx_public_api_core.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+commit 610203a1a4ce5709191a08572709e6a691e6b928
+Author: Emmanuele Bassi <ebassi@gnome.org>
+Date:   Wed Apr 25 18:50:28 2018 +0100
+
+    meson: Fix the -z,relro flag
+    
+    We're missing a dash.
+
+ src/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 45f3e8c28666a937c682f8de6b1b9ec46b4b598e
+Author: Emmanuele Bassi <ebassi@gnome.org>
+Date:   Wed Apr 25 12:11:10 2018 +0100
+
+    Post-release version bump to 1.5.2
+
+ configure.ac | 2 +-
+ meson.build  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
 commit 897e5194743ee0159a428d034822bacb75233cd7
 Author: Emmanuele Bassi <ebassi@gnome.org>
 Date:   Wed Apr 25 11:51:55 2018 +0100
