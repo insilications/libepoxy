@@ -5,20 +5,21 @@
 %define keepstatic 1
 Name     : libepoxy
 Version  : 1.5.2
-Release  : 30
+Release  : 31
 URL      : https://github.com/anholt/libepoxy/releases/download/1.5.2/libepoxy-1.5.2.tar.xz
 Source0  : https://github.com/anholt/libepoxy/releases/download/1.5.2/libepoxy-1.5.2.tar.xz
 Summary  : epoxy GL dispatch Library
 Group    : Development/Tools
 License  : MIT
-Requires: libepoxy-lib
+Requires: libepoxy-lib = %{version}-%{release}
+Requires: libepoxy-license = %{version}-%{release}
+BuildRequires : buildreq-meson
 BuildRequires : gcc-dev32
 BuildRequires : gcc-libgcc32
 BuildRequires : gcc-libstdc++32
 BuildRequires : glibc-dev32
 BuildRequires : glibc-libc32
-BuildRequires : meson
-BuildRequires : ninja
+BuildRequires : pkg-config
 BuildRequires : pkgconfig(32egl)
 BuildRequires : pkgconfig(32gl)
 BuildRequires : pkgconfig(32x11)
@@ -27,7 +28,6 @@ BuildRequires : pkgconfig(egl)
 BuildRequires : pkgconfig(gl)
 BuildRequires : pkgconfig(x11)
 BuildRequires : pkgconfig(xorg-macros)
-BuildRequires : python3
 BuildRequires : python3-dev
 
 %description
@@ -37,8 +37,9 @@ BuildRequires : python3-dev
 %package dev
 Summary: dev components for the libepoxy package.
 Group: Development
-Requires: libepoxy-lib
-Provides: libepoxy-devel
+Requires: libepoxy-lib = %{version}-%{release}
+Provides: libepoxy-devel = %{version}-%{release}
+Requires: libepoxy = %{version}-%{release}
 
 %description dev
 dev components for the libepoxy package.
@@ -47,8 +48,8 @@ dev components for the libepoxy package.
 %package dev32
 Summary: dev32 components for the libepoxy package.
 Group: Default
-Requires: libepoxy-lib32
-Requires: libepoxy-dev
+Requires: libepoxy-lib32 = %{version}-%{release}
+Requires: libepoxy-dev = %{version}-%{release}
 
 %description dev32
 dev32 components for the libepoxy package.
@@ -57,6 +58,7 @@ dev32 components for the libepoxy package.
 %package lib
 Summary: lib components for the libepoxy package.
 Group: Libraries
+Requires: libepoxy-license = %{version}-%{release}
 
 %description lib
 lib components for the libepoxy package.
@@ -65,9 +67,36 @@ lib components for the libepoxy package.
 %package lib32
 Summary: lib32 components for the libepoxy package.
 Group: Default
+Requires: libepoxy-license = %{version}-%{release}
 
 %description lib32
 lib32 components for the libepoxy package.
+
+
+%package license
+Summary: license components for the libepoxy package.
+Group: Default
+
+%description license
+license components for the libepoxy package.
+
+
+%package staticdev
+Summary: staticdev components for the libepoxy package.
+Group: Default
+Requires: libepoxy-dev = %{version}-%{release}
+
+%description staticdev
+staticdev components for the libepoxy package.
+
+
+%package staticdev32
+Summary: staticdev32 components for the libepoxy package.
+Group: Default
+Requires: libepoxy-dev = %{version}-%{release}
+
+%description staticdev32
+staticdev32 components for the libepoxy package.
 
 
 %prep
@@ -80,8 +109,9 @@ popd
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1526827677
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1569526102
+export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
@@ -94,22 +124,27 @@ make  %{?_smp_mflags}
 
 pushd ../build32/
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
-export CFLAGS="$CFLAGS -m32"
-export CXXFLAGS="$CXXFLAGS -m32"
-export LDFLAGS="$LDFLAGS -m32"
+export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
+export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
+export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
+export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
 %configure  --enable-static --enable-glx=yes   --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
 make  %{?_smp_mflags}
 popd
 %check
-export LANG=C
+export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
+cd ../build32;
+make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1526827677
+export SOURCE_DATE_EPOCH=1569526102
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/package-licenses/libepoxy
+cp COPYING %{buildroot}/usr/share/package-licenses/libepoxy/COPYING
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -133,13 +168,11 @@ popd
 /usr/include/epoxy/gl_generated.h
 /usr/include/epoxy/glx.h
 /usr/include/epoxy/glx_generated.h
-/usr/lib64/*.a
 /usr/lib64/libepoxy.so
 /usr/lib64/pkgconfig/epoxy.pc
 
 %files dev32
 %defattr(-,root,root,-)
-/usr/lib32/*.a
 /usr/lib32/libepoxy.so
 /usr/lib32/pkgconfig/32epoxy.pc
 /usr/lib32/pkgconfig/epoxy.pc
@@ -153,3 +186,15 @@ popd
 %defattr(-,root,root,-)
 /usr/lib32/libepoxy.so.0
 /usr/lib32/libepoxy.so.0.0.0
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/libepoxy/COPYING
+
+%files staticdev
+%defattr(-,root,root,-)
+/usr/lib64/libepoxy.a
+
+%files staticdev32
+%defattr(-,root,root,-)
+/usr/lib32/libepoxy.a
