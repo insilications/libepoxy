@@ -4,10 +4,10 @@
 #
 %define keepstatic 1
 Name     : libepoxy
-Version  : 1.5.2
-Release  : 31
-URL      : https://github.com/anholt/libepoxy/releases/download/1.5.2/libepoxy-1.5.2.tar.xz
-Source0  : https://github.com/anholt/libepoxy/releases/download/1.5.2/libepoxy-1.5.2.tar.xz
+Version  : 1.5.3
+Release  : 32
+URL      : https://github.com/anholt/libepoxy/releases/download/1.5.3/libepoxy-1.5.3.tar.xz
+Source0  : https://github.com/anholt/libepoxy/releases/download/1.5.3/libepoxy-1.5.3.tar.xz
 Summary  : epoxy GL dispatch Library
 Group    : Development/Tools
 License  : MIT
@@ -100,9 +100,9 @@ staticdev32 components for the libepoxy package.
 
 
 %prep
-%setup -q -n libepoxy-1.5.2
+%setup -q -n libepoxy-1.5.3
 pushd ..
-cp -a libepoxy-1.5.2 build32
+cp -a libepoxy-1.5.3 build32
 popd
 
 %build
@@ -110,7 +110,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1569526102
+export SOURCE_DATE_EPOCH=1570212863
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -119,7 +119,7 @@ export CFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-m
 export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export FFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-%configure  --enable-static --enable-glx=yes
+%autogen  --enable-static --enable-glx=yes
 make  %{?_smp_mflags}
 
 pushd ../build32/
@@ -128,7 +128,7 @@ export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
 export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
 export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
 export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
-%configure  --enable-static --enable-glx=yes   --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
+%autogen  --enable-static --enable-glx=yes  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
 make  %{?_smp_mflags}
 popd
 %check
@@ -141,7 +141,7 @@ cd ../build32;
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1569526102
+export SOURCE_DATE_EPOCH=1570212863
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/libepoxy
 cp COPYING %{buildroot}/usr/share/package-licenses/libepoxy/COPYING
