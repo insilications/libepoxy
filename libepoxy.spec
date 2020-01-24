@@ -4,11 +4,11 @@
 #
 %define keepstatic 1
 Name     : libepoxy
-Version  : 1.5.3
-Release  : 33
-URL      : https://github.com/anholt/libepoxy/releases/download/1.5.3/libepoxy-1.5.3.tar.xz
-Source0  : https://github.com/anholt/libepoxy/releases/download/1.5.3/libepoxy-1.5.3.tar.xz
-Summary  : epoxy GL dispatch Library
+Version  : 1.5.4
+Release  : 34
+URL      : https://github.com/anholt/libepoxy/releases/download/1.5.4/libepoxy-1.5.4.tar.xz
+Source0  : https://github.com/anholt/libepoxy/releases/download/1.5.4/libepoxy-1.5.4.tar.xz
+Summary  : Library handling OpenGL function pointer management
 Group    : Development/Tools
 License  : MIT
 Requires: libepoxy-lib = %{version}-%{release}
@@ -39,6 +39,7 @@ Summary: dev components for the libepoxy package.
 Group: Development
 Requires: libepoxy-lib = %{version}-%{release}
 Provides: libepoxy-devel = %{version}-%{release}
+Requires: libepoxy = %{version}-%{release}
 Requires: libepoxy = %{version}-%{release}
 
 %description dev
@@ -85,6 +86,7 @@ license components for the libepoxy package.
 Summary: staticdev components for the libepoxy package.
 Group: Default
 Requires: libepoxy-dev = %{version}-%{release}
+Requires: libepoxy-dev = %{version}-%{release}
 
 %description staticdev
 staticdev components for the libepoxy package.
@@ -100,9 +102,10 @@ staticdev32 components for the libepoxy package.
 
 
 %prep
-%setup -q -n libepoxy-1.5.3
+%setup -q -n libepoxy-1.5.4
+cd %{_builddir}/libepoxy-1.5.4
 pushd ..
-cp -a libepoxy-1.5.3 build32
+cp -a libepoxy-1.5.4 build32
 popd
 
 %build
@@ -110,7 +113,8 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1570212863
+export SOURCE_DATE_EPOCH=1579876453
+# -Werror is for werrorists
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -136,15 +140,15 @@ export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-make VERBOSE=1 V=1 %{?_smp_mflags} check
-cd ../build32;
 make VERBOSE=1 V=1 %{?_smp_mflags} check || :
+cd ../build32;
+make VERBOSE=1 V=1 %{?_smp_mflags} check || : || :
 
 %install
-export SOURCE_DATE_EPOCH=1570212863
+export SOURCE_DATE_EPOCH=1579876453
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/libepoxy
-cp COPYING %{buildroot}/usr/share/package-licenses/libepoxy/COPYING
+cp %{_builddir}/libepoxy-1.5.4/COPYING %{buildroot}/usr/share/package-licenses/libepoxy/00f34512740377ad1f155eaa15936e472661c5e3
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -189,7 +193,7 @@ popd
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/libepoxy/COPYING
+/usr/share/package-licenses/libepoxy/00f34512740377ad1f155eaa15936e472661c5e3
 
 %files staticdev
 %defattr(-,root,root,-)
