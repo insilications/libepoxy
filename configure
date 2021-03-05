@@ -1,1 +1,1 @@
---enable-static --enable-glx=yes
+-Dglx=yes

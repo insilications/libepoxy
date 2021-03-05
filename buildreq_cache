@@ -1,4 +1,9 @@
-1.5.4
-pkg-config
-pkgconfig(32xorg-macros)
-pkgconfig(xorg-macros)
+1.5.5
+pkgconfig(32egl)
+pkgconfig(32glesv1_cm)
+pkgconfig(32glesv2)
+pkgconfig(32x11)
+pkgconfig(egl)
+pkgconfig(glesv1_cm)
+pkgconfig(glesv2)
+pkgconfig(x11)

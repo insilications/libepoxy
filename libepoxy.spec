@@ -4,11 +4,11 @@
 #
 %define keepstatic 1
 Name     : libepoxy
-Version  : 1.5.4
-Release  : 38
-URL      : https://github.com/anholt/libepoxy/releases/download/1.5.4/libepoxy-1.5.4.tar.xz
-Source0  : https://github.com/anholt/libepoxy/releases/download/1.5.4/libepoxy-1.5.4.tar.xz
-Summary  : Library handling OpenGL function pointer management
+Version  : 1.5.5
+Release  : 39
+URL      : https://github.com/anholt/libepoxy/releases/download/1.5.5/libepoxy-1.5.5.tar.xz
+Source0  : https://github.com/anholt/libepoxy/releases/download/1.5.5/libepoxy-1.5.5.tar.xz
+Summary  : No detailed summary available
 Group    : Development/Tools
 License  : MIT
 Requires: libepoxy-lib = %{version}-%{release}
@@ -19,15 +19,14 @@ BuildRequires : gcc-libgcc32
 BuildRequires : gcc-libstdc++32
 BuildRequires : glibc-dev32
 BuildRequires : glibc-libc32
-BuildRequires : pkg-config
 BuildRequires : pkgconfig(32egl)
-BuildRequires : pkgconfig(32gl)
+BuildRequires : pkgconfig(32glesv1_cm)
+BuildRequires : pkgconfig(32glesv2)
 BuildRequires : pkgconfig(32x11)
-BuildRequires : pkgconfig(32xorg-macros)
 BuildRequires : pkgconfig(egl)
-BuildRequires : pkgconfig(gl)
+BuildRequires : pkgconfig(glesv1_cm)
+BuildRequires : pkgconfig(glesv2)
 BuildRequires : pkgconfig(x11)
-BuildRequires : pkgconfig(xorg-macros)
 BuildRequires : python3-dev
 
 %description
@@ -39,7 +38,6 @@ Summary: dev components for the libepoxy package.
 Group: Development
 Requires: libepoxy-lib = %{version}-%{release}
 Provides: libepoxy-devel = %{version}-%{release}
-Requires: libepoxy = %{version}-%{release}
 Requires: libepoxy = %{version}-%{release}
 
 %description dev
@@ -82,30 +80,11 @@ Group: Default
 license components for the libepoxy package.
 
 
-%package staticdev
-Summary: staticdev components for the libepoxy package.
-Group: Default
-Requires: libepoxy-dev = %{version}-%{release}
-Requires: libepoxy-dev = %{version}-%{release}
-
-%description staticdev
-staticdev components for the libepoxy package.
-
-
-%package staticdev32
-Summary: staticdev32 components for the libepoxy package.
-Group: Default
-Requires: libepoxy-dev = %{version}-%{release}
-
-%description staticdev32
-staticdev32 components for the libepoxy package.
-
-
 %prep
-%setup -q -n libepoxy-1.5.4
-cd %{_builddir}/libepoxy-1.5.4
+%setup -q -n libepoxy-1.5.5
+cd %{_builddir}/libepoxy-1.5.5
 pushd ..
-cp -a libepoxy-1.5.4 build32
+cp -a libepoxy-1.5.5 build32
 popd
 
 %build
@@ -113,44 +92,41 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1579876453
-# -Werror is for werrorists
+export SOURCE_DATE_EPOCH=1614967271
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
 export CFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-export FCFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-export FFLAGS="$CFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export FCFLAGS="$FFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
+export FFLAGS="$FFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
 export CXXFLAGS="$CXXFLAGS -O3 -falign-functions=32 -ffat-lto-objects -flto=4 -fno-math-errno -fno-semantic-interposition -fno-trapping-math "
-%autogen  --enable-static --enable-glx=yes
-make  %{?_smp_mflags}
-
+CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" meson --libdir=lib64 --prefix=/usr --buildtype=plain -Dglx=yes  builddir
+ninja -v -C builddir
 pushd ../build32/
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
 export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
 export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
 export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
 export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
-%autogen  --enable-static --enable-glx=yes  --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
-make  %{?_smp_mflags}
+meson --libdir=lib32 --prefix=/usr --buildtype=plain -Dglx=yes  builddir
+ninja -v -C builddir
 popd
+
 %check
 export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-make VERBOSE=1 V=1 %{?_smp_mflags} check || :
+meson test -C builddir || :
 cd ../build32;
-make VERBOSE=1 V=1 %{?_smp_mflags} check || : || :
+meson test -C builddir || : || :
 
 %install
-export SOURCE_DATE_EPOCH=1579876453
-rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/libepoxy
-cp %{_builddir}/libepoxy-1.5.4/COPYING %{buildroot}/usr/share/package-licenses/libepoxy/00f34512740377ad1f155eaa15936e472661c5e3
+cp %{_builddir}/libepoxy-1.5.5/COPYING %{buildroot}/usr/share/package-licenses/libepoxy/00f34512740377ad1f155eaa15936e472661c5e3
 pushd ../build32/
-%make_install32
+DESTDIR=%{buildroot} ninja -C builddir install
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
 then
 pushd %{buildroot}/usr/lib32/pkgconfig
@@ -158,7 +134,7 @@ for i in *.pc ; do ln -s $i 32$i ; done
 popd
 fi
 popd
-%make_install
+DESTDIR=%{buildroot} ninja -C builddir install
 
 %files
 %defattr(-,root,root,-)
@@ -194,11 +170,3 @@ popd
 %files license
 %defattr(0644,root,root,0755)
 /usr/share/package-licenses/libepoxy/00f34512740377ad1f155eaa15936e472661c5e3
-
-%files staticdev
-%defattr(-,root,root,-)
-/usr/lib64/libepoxy.a
-
-%files staticdev32
-%defattr(-,root,root,-)
-/usr/lib32/libepoxy.a
