@@ -4,10 +4,10 @@
 #
 %define keepstatic 1
 Name     : libepoxy
-Version  : 1.5.5
-Release  : 39
-URL      : https://github.com/anholt/libepoxy/releases/download/1.5.5/libepoxy-1.5.5.tar.xz
-Source0  : https://github.com/anholt/libepoxy/releases/download/1.5.5/libepoxy-1.5.5.tar.xz
+Version  : 1.5.7
+Release  : 40
+URL      : https://github.com/anholt/libepoxy/releases/download/1.5.7/libepoxy-1.5.7.tar.xz
+Source0  : https://github.com/anholt/libepoxy/releases/download/1.5.7/libepoxy-1.5.7.tar.xz
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : MIT
@@ -30,8 +30,11 @@ BuildRequires : pkgconfig(x11)
 BuildRequires : python3-dev
 
 %description
-[![Build Status](https://travis-ci.org/anholt/libepoxy.svg?branch=master)](https://travis-ci.org/anholt/libepoxy)
-[![Build status](https://ci.appveyor.com/api/projects/status/xv6y5jurt5v5ngjx/branch/master?svg=true)](https://ci.appveyor.com/project/ebassi/libepoxy/branch/master)
+![Ubuntu](https://github.com/anholt/libepoxy/workflows/Ubuntu/badge.svg)
+![macOS](https://github.com/anholt/libepoxy/workflows/macOS/badge.svg)
+![MSVC Build](https://github.com/anholt/libepoxy/workflows/MSVC%20Build/badge.svg)
+![MSYS2 Build](https://github.com/anholt/libepoxy/workflows/MSYS2%20Build/badge.svg)
+[![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
 %package dev
 Summary: dev components for the libepoxy package.
@@ -81,10 +84,10 @@ license components for the libepoxy package.
 
 
 %prep
-%setup -q -n libepoxy-1.5.5
-cd %{_builddir}/libepoxy-1.5.5
+%setup -q -n libepoxy-1.5.7
+cd %{_builddir}/libepoxy-1.5.7
 pushd ..
-cp -a libepoxy-1.5.5 build32
+cp -a libepoxy-1.5.7 build32
 popd
 
 %build
@@ -92,7 +95,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1614967271
+export SOURCE_DATE_EPOCH=1620229910
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -124,7 +127,7 @@ meson test -C builddir || : || :
 
 %install
 mkdir -p %{buildroot}/usr/share/package-licenses/libepoxy
-cp %{_builddir}/libepoxy-1.5.5/COPYING %{buildroot}/usr/share/package-licenses/libepoxy/00f34512740377ad1f155eaa15936e472661c5e3
+cp %{_builddir}/libepoxy-1.5.7/COPYING %{buildroot}/usr/share/package-licenses/libepoxy/00f34512740377ad1f155eaa15936e472661c5e3
 pushd ../build32/
 DESTDIR=%{buildroot} ninja -C builddir install
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
