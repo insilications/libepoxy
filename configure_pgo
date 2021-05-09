@@ -1,5 +1,5 @@
 -Dglx=yes
 --buildtype=release
 -Ddefault_library=both
--Dtests=true
+-Dtests=false
 -Ddocs=false
