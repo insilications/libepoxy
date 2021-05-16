@@ -1,6 +1,6 @@
 -Ddefault_library=both
 -Dglx=yes
--Degl=yes
+-Degl=no
 -Dx11=true
 -Dtests=false
 -Ddocs=false

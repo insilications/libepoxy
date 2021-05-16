@@ -1,4 +1,5 @@
 -Ddefault_library=both
 -Dglx=yes
--Dtests=true
+-Dx11=true
+-Dtests=false
 -Ddocs=false

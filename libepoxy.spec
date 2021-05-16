@@ -11,6 +11,7 @@ Source0  : file:///aot/build/clearlinux/packages/libepoxy/libepoxy-v1.5.7.tar.gz
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-2.0
+Requires: libepoxy-lib = %{version}-%{release}
 BuildRequires : ImageMagick-dev
 BuildRequires : Sphinx
 BuildRequires : Z3-dev
@@ -375,9 +376,7 @@ BuildRequires : python3-staticdev
 BuildRequires : setxkbmap
 BuildRequires : shaderc
 BuildRequires : shaderc-dev
-BuildRequires : shaderc-dev32
 BuildRequires : shaderc-staticdev
-BuildRequires : shaderc-staticdev32
 BuildRequires : shared-mime-info
 BuildRequires : snappy-dev
 BuildRequires : solid-dev
@@ -469,6 +468,61 @@ BuildRequires : zstd-staticdev
 ![MSYS2 Build](https://github.com/anholt/libepoxy/workflows/MSYS2%20Build/badge.svg)
 [![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
+%package dev
+Summary: dev components for the libepoxy package.
+Group: Development
+Requires: libepoxy-lib = %{version}-%{release}
+Provides: libepoxy-devel = %{version}-%{release}
+Requires: libepoxy = %{version}-%{release}
+
+%description dev
+dev components for the libepoxy package.
+
+
+%package dev32
+Summary: dev32 components for the libepoxy package.
+Group: Default
+Requires: libepoxy-lib32 = %{version}-%{release}
+Requires: libepoxy-dev = %{version}-%{release}
+
+%description dev32
+dev32 components for the libepoxy package.
+
+
+%package lib
+Summary: lib components for the libepoxy package.
+Group: Libraries
+
+%description lib
+lib components for the libepoxy package.
+
+
+%package lib32
+Summary: lib32 components for the libepoxy package.
+Group: Default
+
+%description lib32
+lib32 components for the libepoxy package.
+
+
+%package staticdev
+Summary: staticdev components for the libepoxy package.
+Group: Default
+Requires: libepoxy-dev = %{version}-%{release}
+
+%description staticdev
+staticdev components for the libepoxy package.
+
+
+%package staticdev32
+Summary: staticdev32 components for the libepoxy package.
+Group: Default
+Requires: libepoxy-dev32 = %{version}-%{release}
+
+%description staticdev32
+staticdev32 components for the libepoxy package.
+
+
 %prep
 %setup -q -n libepoxy
 cd %{_builddir}/libepoxy
@@ -482,7 +536,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1621174771
+export SOURCE_DATE_EPOCH=1621175559
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -536,7 +590,7 @@ export FCFLAGS="${FCFLAGS_GENERATE}"
 export LDFLAGS="${LDFLAGS_GENERATE}"
 meson --libdir=lib64 --prefix=/usr --buildtype=release -Ddefault_library=both  -Ddefault_library=both \
 -Dglx=yes \
--Degl=yes \
+-Degl=no \
 -Dx11=true \
 -Dtests=true \
 -Ddocs=false builddir
@@ -578,7 +632,7 @@ export FCFLAGS="${FCFLAGS_USE}"
 export LDFLAGS="${LDFLAGS_USE}"
 meson --libdir=lib64 --prefix=/usr --buildtype=release -Ddefault_library=both  -Ddefault_library=both \
 -Dglx=yes \
--Degl=yes \
+-Degl=no \
 -Dx11=true \
 -Dtests=false \
 -Ddocs=false builddir
@@ -598,7 +652,8 @@ export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
 export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
 meson --libdir=lib32 --prefix=/usr --buildtype=release -Ddefault_library=both  -Ddefault_library=both \
 -Dglx=yes \
--Dtests=true \
+-Dx11=true \
+-Dtests=false \
 -Ddocs=false builddir
 ninja --verbose %{?_smp_mflags} -v -C builddir
 popd
@@ -617,3 +672,39 @@ DESTDIR=%{buildroot} ninja -C builddir install
 
 %files
 %defattr(-,root,root,-)
+
+%files dev
+%defattr(-,root,root,-)
+/usr/include/epoxy/common.h
+/usr/include/epoxy/egl.h
+/usr/include/epoxy/egl_generated.h
+/usr/include/epoxy/gl.h
+/usr/include/epoxy/gl_generated.h
+/usr/include/epoxy/glx.h
+/usr/include/epoxy/glx_generated.h
+/usr/lib64/libepoxy.so
+/usr/lib64/pkgconfig/epoxy.pc
+
+%files dev32
+%defattr(-,root,root,-)
+/usr/lib32/libepoxy.so
+/usr/lib32/pkgconfig/32epoxy.pc
+/usr/lib32/pkgconfig/epoxy.pc
+
+%files lib
+%defattr(-,root,root,-)
+/usr/lib64/libepoxy.so.0
+/usr/lib64/libepoxy.so.0.0.0
+
+%files lib32
+%defattr(-,root,root,-)
+/usr/lib32/libepoxy.so.0
+/usr/lib32/libepoxy.so.0.0.0
+
+%files staticdev
+%defattr(-,root,root,-)
+/usr/lib64/libepoxy.a
+
+%files staticdev32
+%defattr(-,root,root,-)
+/usr/lib32/libepoxy.a
