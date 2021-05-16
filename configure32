@@ -1,0 +1,4 @@
+-Ddefault_library=both
+-Dglx=yes
+-Dtests=true
+-Ddocs=false
