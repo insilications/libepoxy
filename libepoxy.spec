@@ -5,7 +5,7 @@
 %define keepstatic 1
 Name     : libepoxy
 Version  : 1.5.7
-Release  : 41
+Release  : 301
 URL      : file:///aot/build/clearlinux/packages/libepoxy/libepoxy-v1.5.7.tar.gz
 Source0  : file:///aot/build/clearlinux/packages/libepoxy/libepoxy-v1.5.7.tar.gz
 Summary  : No detailed summary available
@@ -536,7 +536,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1621175559
+export SOURCE_DATE_EPOCH=1621177589
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -590,7 +590,7 @@ export FCFLAGS="${FCFLAGS_GENERATE}"
 export LDFLAGS="${LDFLAGS_GENERATE}"
 meson --libdir=lib64 --prefix=/usr --buildtype=release -Ddefault_library=both  -Ddefault_library=both \
 -Dglx=yes \
--Degl=no \
+-Degl=yes \
 -Dx11=true \
 -Dtests=true \
 -Ddocs=false builddir
@@ -632,7 +632,7 @@ export FCFLAGS="${FCFLAGS_USE}"
 export LDFLAGS="${LDFLAGS_USE}"
 meson --libdir=lib64 --prefix=/usr --buildtype=release -Ddefault_library=both  -Ddefault_library=both \
 -Dglx=yes \
--Degl=no \
+-Degl=yes \
 -Dx11=true \
 -Dtests=false \
 -Ddocs=false builddir

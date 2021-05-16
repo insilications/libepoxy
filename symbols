@@ -1,10 +1,13 @@
 libepoxy.so.0:epoxy_conservative_egl_dlsym
+libepoxy.so.0:epoxy_conservative_egl_version
 libepoxy.so.0:epoxy_conservative_gl_version
 libepoxy.so.0:epoxy_conservative_glx_dlsym
 libepoxy.so.0:epoxy_conservative_glx_version
+libepoxy.so.0:epoxy_conservative_has_egl_extension
 libepoxy.so.0:epoxy_conservative_has_gl_extension
 libepoxy.so.0:epoxy_conservative_has_glx_extension
 libepoxy.so.0:epoxy_egl_dlsym
+libepoxy.so.0:epoxy_egl_version
 libepoxy.so.0:epoxy_extension_in_string
 libepoxy.so.0:epoxy_get_bootstrap_proc_address
 libepoxy.so.0:epoxy_get_core_proc_address
@@ -17,6 +20,8 @@ libepoxy.so.0:epoxy_gles3_dlsym
 libepoxy.so.0:epoxy_glsl_version
 libepoxy.so.0:epoxy_glx_dlsym
 libepoxy.so.0:epoxy_glx_version
+libepoxy.so.0:epoxy_has_egl
+libepoxy.so.0:epoxy_has_egl_extension
 libepoxy.so.0:epoxy_has_gl_extension
 libepoxy.so.0:epoxy_has_glx
 libepoxy.so.0:epoxy_has_glx_extension
