@@ -1,2 +1,32 @@
 # This file contains additional pkgconfig build requirements that did
 # not get picked up automatically. One name per line, no whitespace.
+dbus-1
+dri
+egl
+expat
+gbm
+gl
+glesv1_cm
+glesv2
+glib-2.0
+gmock
+gmock_main
+gtest
+gtest_main
+ice
+libdrm
+libsystemd
+osmesa
+sm
+systemd
+valgrind
+vulkan
+x11
+xatracker
+xcursor
+xext
+xi
+xinerama
+xkbcommon
+xrandr
+xscrnsaver

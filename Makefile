@@ -1,5 +1,6 @@
 PKG_NAME := libepoxy
-URL = https://github.com/anholt/libepoxy/releases/download/1.5.7/libepoxy-1.5.7.tar.xz
+URL = https://github.com/anholt/libepoxy.git
 ARCHIVES = 
+ARCHIVES_GIT = 
 
 include ../common/Makefile.common

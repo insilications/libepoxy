@@ -1,5 +1,7 @@
--Dglx=yes
 --buildtype=release
+-Dglx=yes
+-Degl=yes
+-Dx11=yes
 -Ddefault_library=both
 -Dtests=false
 -Ddocs=false
